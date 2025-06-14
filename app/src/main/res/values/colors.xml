@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    //BRAND
+    <color name="purple_base">#892CCD</color>
+    <color name="purple_light">#A85FDD</color>
+    //Grayscale
+    <color name="gray_100">#0F0F1A</color>
+    <color name="gray_200">#131320</color>
+    <color name="gray_300">#1A1B2D</color>
+    <color name="gray_400">#45455F</color>
+    <color name="gray_500">#7A7B9F</color>
+    <color name="gray_600">#B5B6C9</color>
+    <color name="gray_700">#E4E5EC</color>
+    <color name="white">#FFFFFF</color>
+</resources>
