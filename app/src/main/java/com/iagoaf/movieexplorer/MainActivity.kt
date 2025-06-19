@@ -14,6 +14,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,6 +22,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -30,19 +33,21 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.iagoaf.movieexplorer.core.routes.AppRoutes
 import com.iagoaf.movieexplorer.core.routes.ScreenNavItem
+import com.iagoaf.movieexplorer.core.ui.theme.Gray100
+import com.iagoaf.movieexplorer.core.ui.theme.Gray200
+import com.iagoaf.movieexplorer.core.ui.theme.Gray500
+import com.iagoaf.movieexplorer.core.ui.theme.MovieExplorerTheme
+import com.iagoaf.movieexplorer.core.ui.theme.PurpleLight
+import com.iagoaf.movieexplorer.core.ui.theme.appTypography
 import com.iagoaf.movieexplorer.src.features.favorites.presentation.screen.FavoritesScreen
+import com.iagoaf.movieexplorer.src.features.favorites.presentation.viewmodel.FavoritesViewModel
 import com.iagoaf.movieexplorer.src.features.popular.presentation.screen.PopularScreen
+import com.iagoaf.movieexplorer.src.features.popular.presentation.viewmodel.PopularViewModel
 import com.iagoaf.movieexplorer.src.features.search.presentation.screen.SearchScreen
-import com.iagoaf.movieexplorer.ui.theme.Gray100
-import com.iagoaf.movieexplorer.ui.theme.Gray200
-import com.iagoaf.movieexplorer.ui.theme.Gray500
-import com.iagoaf.movieexplorer.ui.theme.MovieExplorerTheme
-import com.iagoaf.movieexplorer.ui.theme.PurpleLight
-import com.iagoaf.movieexplorer.ui.theme.appTypography
+import com.iagoaf.movieexplorer.src.features.search.presentation.viewmodel.SearchViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
-// Se você estiver usando a Abordagem 2 para tipografia personalizada:
-// import com.iagoaf.movieexplorer.ui.theme.LocalAppCustomTypography
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +65,7 @@ class MainActivity : ComponentActivity() {
 fun ContentApp(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = Gray100,
@@ -121,13 +127,28 @@ fun ContentApp(navController: NavHostController) {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(route = AppRoutes.POPULAR) {
-                PopularScreen(navController = navController)
+                val popularViewModel: PopularViewModel = hiltViewModel()
+                val popularState = popularViewModel.state.collectAsState().value
+                PopularScreen(
+                    navController = navController,
+                    state = popularState,
+                )
             }
             composable(route = AppRoutes.SEARCH) {
-                SearchScreen(navController = navController)
+                val searchViewModel: SearchViewModel = viewModel()
+                val searchState = searchViewModel.state.collectAsState().value
+                SearchScreen(
+                    navController = navController,
+                    searchState = searchState,
+                    onSearchMovie = { movieName ->
+                        searchViewModel.searchMovie(movieName)
+                    }
+                )
             }
             composable(route = AppRoutes.FAVORITES) {
-                FavoritesScreen(navController = navController)
+                val favoritesViewModel: FavoritesViewModel = viewModel()
+                val favoritesState = favoritesViewModel.state.collectAsState().value
+                FavoritesScreen(navController = navController, state = favoritesState)
             }
         }
     }

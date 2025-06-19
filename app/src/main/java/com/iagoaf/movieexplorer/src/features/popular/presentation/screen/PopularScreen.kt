@@ -1,28 +1,33 @@
 package com.iagoaf.movieexplorer.src.features.popular.presentation.screen
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridCells.Fixed
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -34,20 +39,23 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
+import coil.request.ImageRequest.Builder
 import com.iagoaf.movieexplorer.R
-import com.iagoaf.movieexplorer.ui.theme.Gray100
-import com.iagoaf.movieexplorer.ui.theme.Gray600
-import com.iagoaf.movieexplorer.ui.theme.Gray700
-import com.iagoaf.movieexplorer.ui.theme.PurpleLight
-import com.iagoaf.movieexplorer.ui.theme.White
-import com.iagoaf.movieexplorer.ui.theme.appTypography
+import com.iagoaf.movieexplorer.core.ui.theme.Gray100
+import com.iagoaf.movieexplorer.core.ui.theme.Gray700
+import com.iagoaf.movieexplorer.core.ui.theme.PurpleLight
+import com.iagoaf.movieexplorer.core.ui.theme.White
+import com.iagoaf.movieexplorer.core.ui.theme.appTypography
+import com.iagoaf.movieexplorer.src.features.popular.presentation.state.PopularViewModelState
+import com.iagoaf.movieexplorer.src.shared.MovieModel
+import com.iagoaf.movieexplorer.src.shared.MovieUtils
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun PopularScreen(navController: NavController) {
-    // Exemplo de URL de imagem (substitua pela sua URL real)
-    val exampleImageUrl =
-        "https://br.web.img2.acsta.net/pictures/21/08/16/10/00/0453990.jpg" // Exemplo
+fun PopularScreen(
+    navController: NavController,
+    state: PopularViewModelState,
+) {
 
     Column(
         modifier = Modifier
@@ -76,113 +84,151 @@ fun PopularScreen(navController: NavController) {
             ),
             modifier = Modifier.padding(bottom = 12.dp)
         )
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(6) { index ->
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(
-                        topStart = 16.dp,
-                        topEnd = 16.dp,
-                        bottomStart = 16.dp,
-                        bottomEnd = 16.dp
-                    )
+        when (state) {
+            is PopularViewModelState.Success -> {
+                LazyVerticalGrid(
+                    columns = Fixed(2),
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data(exampleImageUrl) // Use sua URL dinâmica aqui
-                                .crossfade(true)
-                                .placeholder(R.drawable.image)
-                                .build(),
-                            contentDescription = "Poster do Filme ${index + 1}",
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-
-
-                        // Sombra no fundo para deixar o texto legível
-                        Box(
+                    items(state.movies) { movie ->
+                        Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .fillMaxHeight()
-                                .align(Alignment.BottomCenter)
-                                .background(
-                                    Brush.verticalGradient(
-                                        colors = listOf(
-                                            Color.Transparent,
-                                            Color.Black.copy(alpha = 0.6f),
-                                            Color.Black.copy(alpha = 0.9f)
-                                        ),
-                                        startY = 300f // Pode ajustar conforme a altura do seu card
-                                    )
-                                )
-                        )
-
-                        Column(
-                            modifier = Modifier
-                                .align(Alignment.BottomStart)
-                                .padding(12.dp)
+                                .aspectRatio(2f / 3f),
+                            shape = RoundedCornerShape(16.dp)
                         ) {
-                            Text(
-                                text = "Missão: Impossível - O Acerto Final",
-                                style = appTypography.titleMedium.copy(
-                                    color = White,
-                                    fontSize = 16.sp
-                                ),
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis,
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                AsyncImage(
+                                    model = Builder(LocalContext.current)
+                                        .data(MovieUtils.imgBaseUrl + movie.posterPath)
+                                        .crossfade(true)
+                                        .build(),
+                                    contentDescription = "Poster do Filme",
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
 
-                                )
-                            Row {
-                                Image(
-                                    painter = painterResource(R.drawable.ic_star),
-                                    contentDescription = "Rating Star",
+                                Column(
                                     modifier = Modifier
-                                        .size(12.dp)
-                                        .align(Alignment.CenterVertically),
-                                    colorFilter = ColorFilter.tint(White)
-                                )
-                                Text(
-                                    "7,5",
-                                    style = appTypography.labelSmall.copy(
-                                        color = Gray600,
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.W600
+                                        .align(Alignment.BottomStart)
+                                        .fillMaxWidth()
+                                        .background(
+                                            Brush.verticalGradient(
+                                                tileMode = TileMode.Mirror,
+                                                colors = listOf(
+                                                    Color.Black.copy(alpha = 0.3f),
+                                                    Color.Black.copy(alpha = 0.8f),
+                                                ),
+                                                startY = 0f,
+                                                endY = Float.POSITIVE_INFINITY
+                                            )
+                                        )
+                                        .clip(
+                                            shape = RoundedCornerShape(16.dp)
+                                        )
+
+                                        .padding(12.dp)
+                                ) {
+                                    Text(
+                                        text = movie.title,
+                                        style = appTypography.titleMedium.copy(
+                                            color = White,
+                                            fontSize = 16.sp
+                                        ),
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis,
                                     )
-                                )
-                                Text(
-                                    " - ",
-                                    style = appTypography.labelSmall.copy(
-                                        color = Gray600,
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.W600
-                                    )
-                                )
-                                Text(
-                                    "2025",
-                                    style = appTypography.labelSmall.copy(
-                                        color = Gray600,
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.W600
-                                    )
-                                )
+                                    Row {
+                                        Image(
+                                            painter = painterResource(R.drawable.ic_star),
+                                            contentDescription = "Rating Star",
+                                            modifier = Modifier
+                                                .size(12.dp)
+                                                .align(Alignment.CenterVertically),
+                                            colorFilter = ColorFilter.tint(White)
+                                        )
+                                        Text(
+                                            movie.voteAverage.toString(),
+                                            style = appTypography.labelSmall.copy(
+                                                color = White,
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.W800
+                                            )
+                                        )
+                                        Text(
+                                            " - ",
+                                            style = appTypography.labelSmall.copy(
+                                                color = White,
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.W800
+                                            )
+                                        )
+                                        Text(
+                                            movie.formatReleaseDate().year.toString(),
+                                            style = appTypography.labelSmall.copy(
+                                                color = White,
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.W800
+                                            )
+                                        )
+                                    }
+                                }
                             }
                         }
+
                     }
                 }
+            }
+
+            is PopularViewModelState.Error -> Text("ERRO")
+            is PopularViewModelState.Loading -> Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator()
             }
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 private fun PopularScreenPreview() {
-    PopularScreen(navController = rememberNavController())
+    PopularScreen(
+        navController = rememberNavController(),
+        state = PopularViewModelState.Success(
+            listOf(
+                MovieModel(
+                    adult = false,
+                    backdropPath = "",
+                    genreIds = listOf(),
+                    id = 1,
+                    originalLanguage = "en",
+                    originalTitle = "Example Movie",
+                    overview = "This is an example movie description.",
+                    popularity = 10.0,
+                    posterPath = "example.jpg",
+                    releaseDate = "2023-10-01",
+                    title = "Example Movie",
+                    video = false,
+                    voteAverage = 8.5,
+                    voteCount = 1000
+                )
+            )
+        )
+    )
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview
+@Composable
+private fun PopularScreenLoadingPreview() {
+    PopularScreen(
+        navController = rememberNavController(),
+        state = PopularViewModelState.Loading
+    )
 }

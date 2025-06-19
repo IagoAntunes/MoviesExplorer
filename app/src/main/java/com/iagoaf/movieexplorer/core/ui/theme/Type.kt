@@ -1,4 +1,4 @@
-package com.iagoaf.movieexplorer.ui.theme
+package com.iagoaf.movieexplorer.core.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
