@@ -1,4 +1,4 @@
-package com.iagoaf.movieexplorer.src.features.popular.external.service
+package com.iagoaf.movieexplorer.src.shared.movie.external.service
 
 import com.iagoaf.movieexplorer.services.http.RetrofitClient
 import dagger.Module
@@ -18,7 +18,7 @@ object ServiceModule {
 
     @Provides
     @Singleton
-    fun provideLinkService(retrofit: Retrofit): PopularMoviesService {
-        return retrofit.create(PopularMoviesService::class.java)
+    fun provideLinkService(retrofit: Retrofit): MoviesService {
+        return retrofit.create(MoviesService::class.java)
     }
 }

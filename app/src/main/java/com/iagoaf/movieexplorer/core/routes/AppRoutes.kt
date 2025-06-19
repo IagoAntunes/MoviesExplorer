@@ -7,6 +7,7 @@ object AppRoutes {
     const val POPULAR = "popular"
     const val SEARCH = "search"
     const val FAVORITES = "favorites"
+    const val MOVIE_DETAIL = "movieDetail"
 
 }
 

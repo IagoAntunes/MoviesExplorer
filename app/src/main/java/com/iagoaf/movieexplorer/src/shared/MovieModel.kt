@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter
 data class MovieModel(
     val adult: Boolean,
     @SerializedName("backdrop_path")
-    val backdropPath: String,
+    val backdropPath: String?,
     @SerializedName("genre_ids")
     val genreIds: List<Int>,
     val id: Int,
@@ -22,7 +22,7 @@ data class MovieModel(
     val overview: String,
     val popularity: Double,
     @SerializedName("poster_path")
-    val posterPath: String,
+    val posterPath: String?,
     @SerializedName("release_date")
     val releaseDate: String,
     val title: String,
@@ -39,6 +39,5 @@ data class MovieModel(
         val localDate = LocalDate.parse(releaseDate, formatter)
         return localDate
     }
-
 
 }

@@ -1,8 +1,9 @@
-package com.iagoaf.movieexplorer.src.features.popular.domain.repository
+package com.iagoaf.movieexplorer.src.shared.movie.domain
 
 import com.iagoaf.movieexplorer.core.result.BaseResult
 import com.iagoaf.movieexplorer.src.shared.MovieModel
 
-interface IPopularMoviesRepository {
+interface IMoviesRepository {
     suspend fun getPopularMovies(): BaseResult<List<MovieModel>>
+    suspend fun searchMovies(query: String, page: Int): BaseResult<List<MovieModel>>
 }

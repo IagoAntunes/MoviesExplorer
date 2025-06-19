@@ -2,8 +2,8 @@ package com.iagoaf.movieexplorer.src.features.popular.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.iagoaf.movieexplorer.src.features.popular.domain.repository.IPopularMoviesRepository
 import com.iagoaf.movieexplorer.src.features.popular.presentation.state.PopularViewModelState
+import com.iagoaf.movieexplorer.src.shared.movie.domain.IMoviesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PopularViewModel @Inject constructor(
-    private val repository: IPopularMoviesRepository
+    private val repository: IMoviesRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<PopularViewModelState>(PopularViewModelState.Loading)
@@ -27,14 +27,13 @@ class PopularViewModel @Inject constructor(
         viewModelScope.launch {
             _state.value = PopularViewModelState.Loading
             val result = repository.getPopularMovies()
-            result.onSuccess { movies ->
+            result.onSuccess { movies, _ ->
                 _state.value = PopularViewModelState.Success(movies)
             }
             result.onError { error ->
                 _state.value = PopularViewModelState.Error(error)
             }
         }
-
     }
 
 

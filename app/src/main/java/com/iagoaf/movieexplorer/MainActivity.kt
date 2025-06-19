@@ -1,9 +1,11 @@
 package com.iagoaf.movieexplorer
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,10 +29,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.iagoaf.movieexplorer.core.routes.AppRoutes
 import com.iagoaf.movieexplorer.core.routes.ScreenNavItem
 import com.iagoaf.movieexplorer.core.ui.theme.Gray100
@@ -45,10 +49,16 @@ import com.iagoaf.movieexplorer.src.features.popular.presentation.screen.Popular
 import com.iagoaf.movieexplorer.src.features.popular.presentation.viewmodel.PopularViewModel
 import com.iagoaf.movieexplorer.src.features.search.presentation.screen.SearchScreen
 import com.iagoaf.movieexplorer.src.features.search.presentation.viewmodel.SearchViewModel
+import com.iagoaf.movieexplorer.src.shared.MovieModel
+import com.iagoaf.movieexplorer.src.shared.movie.presentation.screen.MovieDetailsScreen
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.serialization.json.Json
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -61,6 +71,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ContentApp(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -135,13 +146,13 @@ fun ContentApp(navController: NavHostController) {
                 )
             }
             composable(route = AppRoutes.SEARCH) {
-                val searchViewModel: SearchViewModel = viewModel()
+                val searchViewModel: SearchViewModel = hiltViewModel()
                 val searchState = searchViewModel.state.collectAsState().value
                 SearchScreen(
                     navController = navController,
                     searchState = searchState,
-                    onSearchMovie = { movieName ->
-                        searchViewModel.searchMovie(movieName)
+                    onSearchMovie = { movieName, reset ->
+                        searchViewModel.searchMovie(movieName, reset)
                     }
                 )
             }
@@ -150,11 +161,30 @@ fun ContentApp(navController: NavHostController) {
                 val favoritesState = favoritesViewModel.state.collectAsState().value
                 FavoritesScreen(navController = navController, state = favoritesState)
             }
+            composable(
+                route = "${AppRoutes.MOVIE_DETAIL}/{movie}",
+                arguments = listOf(
+                    navArgument("movie") {
+                        type = NavType.StringType
+                    }
+                ),
+            ) { backStackEntry ->
+                val encodedMovie = backStackEntry.arguments?.getString("movie")
+                val decodedMovie = encodedMovie?.let {
+                    val json = URLDecoder.decode(it, StandardCharsets.UTF_8.toString())
+                    Json.decodeFromString<MovieModel>(json)
+                }
+                MovieDetailsScreen(
+                    movie = decodedMovie!!,
+                    navController = navController
+                )
+            }
         }
     }
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun ContentAppPreview() {
