@@ -1,4 +1,4 @@
-package com.iagoaf.movieexplorer.src.shared
+package com.iagoaf.movieexplorer.src.shared.movie.domain.model
 
 import android.os.Build
 import androidx.annotation.RequiresApi

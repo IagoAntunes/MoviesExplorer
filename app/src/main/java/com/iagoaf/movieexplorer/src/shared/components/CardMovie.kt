@@ -37,7 +37,7 @@ import coil.request.ImageRequest.Builder
 import com.iagoaf.movieexplorer.R
 import com.iagoaf.movieexplorer.core.ui.theme.White
 import com.iagoaf.movieexplorer.core.ui.theme.appTypography
-import com.iagoaf.movieexplorer.src.shared.MovieModel
+import com.iagoaf.movieexplorer.src.shared.movie.domain.model.MovieModel
 import com.iagoaf.movieexplorer.src.shared.MovieUtils
 
 @RequiresApi(Build.VERSION_CODES.O)

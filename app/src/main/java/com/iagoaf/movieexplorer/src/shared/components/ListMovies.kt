@@ -14,7 +14,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.iagoaf.movieexplorer.src.shared.MovieModel
+import com.iagoaf.movieexplorer.src.shared.movie.domain.model.MovieModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable

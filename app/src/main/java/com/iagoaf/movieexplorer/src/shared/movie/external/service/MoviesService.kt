@@ -1,7 +1,7 @@
 package com.iagoaf.movieexplorer.src.shared.movie.external.service
 
 import com.iagoaf.movieexplorer.core.response.BaseResponse
-import com.iagoaf.movieexplorer.src.shared.MovieModel
+import com.iagoaf.movieexplorer.src.shared.movie.domain.model.MovieModel
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query

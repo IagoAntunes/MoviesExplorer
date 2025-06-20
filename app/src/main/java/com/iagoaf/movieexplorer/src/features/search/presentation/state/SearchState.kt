@@ -1,6 +1,6 @@
 package com.iagoaf.movieexplorer.src.features.search.presentation.state
 
-import com.iagoaf.movieexplorer.src.shared.MovieModel
+import com.iagoaf.movieexplorer.src.shared.movie.domain.model.MovieModel
 
 sealed class SearchState {
     object Idle : SearchState()

@@ -28,7 +28,7 @@ import com.iagoaf.movieexplorer.core.ui.theme.PurpleLight
 import com.iagoaf.movieexplorer.core.ui.theme.White
 import com.iagoaf.movieexplorer.core.ui.theme.appTypography
 import com.iagoaf.movieexplorer.src.features.popular.presentation.state.PopularViewModelState
-import com.iagoaf.movieexplorer.src.shared.MovieModel
+import com.iagoaf.movieexplorer.src.shared.movie.domain.model.MovieModel
 import com.iagoaf.movieexplorer.src.shared.components.ListMoviesComp
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json

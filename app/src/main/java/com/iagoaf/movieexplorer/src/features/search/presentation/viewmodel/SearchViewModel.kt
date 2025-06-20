@@ -3,8 +3,8 @@ package com.iagoaf.movieexplorer.src.features.search.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iagoaf.movieexplorer.src.features.search.presentation.state.SearchState
-import com.iagoaf.movieexplorer.src.shared.MovieModel
-import com.iagoaf.movieexplorer.src.shared.movie.domain.IMoviesRepository
+import com.iagoaf.movieexplorer.src.shared.movie.domain.model.MovieModel
+import com.iagoaf.movieexplorer.src.shared.movie.domain.repository.IMoviesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

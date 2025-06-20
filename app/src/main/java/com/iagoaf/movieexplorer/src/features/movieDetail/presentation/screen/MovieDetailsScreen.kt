@@ -1,4 +1,4 @@
-package com.iagoaf.movieexplorer.src.shared.movie.presentation.screen
+package com.iagoaf.movieexplorer.src.features.movieDetail.presentation.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -46,27 +46,35 @@ import com.iagoaf.movieexplorer.core.ui.theme.Gray300
 import com.iagoaf.movieexplorer.core.ui.theme.Gray600
 import com.iagoaf.movieexplorer.core.ui.theme.Gray700
 import com.iagoaf.movieexplorer.core.ui.theme.PurpleLight
+import com.iagoaf.movieexplorer.core.ui.theme.White
 import com.iagoaf.movieexplorer.core.ui.theme.appTypography
-import com.iagoaf.movieexplorer.src.shared.MovieModel
+import com.iagoaf.movieexplorer.src.features.movieDetail.presentation.MovieDetailState
 import com.iagoaf.movieexplorer.src.shared.MovieUtils
+import com.iagoaf.movieexplorer.src.shared.movie.domain.model.MovieModel
 
 @Composable
 fun MovieDetailsScreen(
     movie: MovieModel,
-    navController: NavController
+    navController: NavController,
+    movieDetailState: MovieDetailState,
+    onFavoriteMovie: (MovieModel) -> Unit = { },
+    isFavorite: Boolean,
 ) {
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {},
-                containerColor = Gray300,
+                onClick = {
+                    onFavoriteMovie(movie)
+                },
+                containerColor = if (isFavorite) PurpleLight else Gray300,
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Image(
                     painter = painterResource(R.drawable.ic_favorites),
                     contentDescription = "Favorite",
                     colorFilter = ColorFilter.tint(
-                        PurpleLight
+                        if (isFavorite) White else
+                            PurpleLight
                     )
                 )
             }
@@ -243,6 +251,8 @@ private fun MovieDetailsPreview() {
             video = false,
             voteAverage = 8.0,
             voteCount = 1000
-        )
+        ),
+        movieDetailState = MovieDetailState.Idle,
+        isFavorite = false,
     )
 }

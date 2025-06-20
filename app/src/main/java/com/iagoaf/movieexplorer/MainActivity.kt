@@ -16,6 +16,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -25,7 +26,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -45,12 +45,13 @@ import com.iagoaf.movieexplorer.core.ui.theme.PurpleLight
 import com.iagoaf.movieexplorer.core.ui.theme.appTypography
 import com.iagoaf.movieexplorer.src.features.favorites.presentation.screen.FavoritesScreen
 import com.iagoaf.movieexplorer.src.features.favorites.presentation.viewmodel.FavoritesViewModel
+import com.iagoaf.movieexplorer.src.features.movieDetail.presentation.screen.MovieDetailsScreen
+import com.iagoaf.movieexplorer.src.features.movieDetail.presentation.viewmodel.MovieDetailViewModel
 import com.iagoaf.movieexplorer.src.features.popular.presentation.screen.PopularScreen
 import com.iagoaf.movieexplorer.src.features.popular.presentation.viewmodel.PopularViewModel
 import com.iagoaf.movieexplorer.src.features.search.presentation.screen.SearchScreen
 import com.iagoaf.movieexplorer.src.features.search.presentation.viewmodel.SearchViewModel
-import com.iagoaf.movieexplorer.src.shared.MovieModel
-import com.iagoaf.movieexplorer.src.shared.movie.presentation.screen.MovieDetailsScreen
+import com.iagoaf.movieexplorer.src.shared.movie.domain.model.MovieModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.json.Json
 import java.net.URLDecoder
@@ -157,8 +158,13 @@ fun ContentApp(navController: NavHostController) {
                 )
             }
             composable(route = AppRoutes.FAVORITES) {
-                val favoritesViewModel: FavoritesViewModel = viewModel()
+                val favoritesViewModel: FavoritesViewModel = hiltViewModel()
                 val favoritesState = favoritesViewModel.state.collectAsState().value
+
+                LaunchedEffect(Unit) {
+                    favoritesViewModel.getFavorites()
+                }
+
                 FavoritesScreen(navController = navController, state = favoritesState)
             }
             composable(
@@ -174,9 +180,18 @@ fun ContentApp(navController: NavHostController) {
                     val json = URLDecoder.decode(it, StandardCharsets.UTF_8.toString())
                     Json.decodeFromString<MovieModel>(json)
                 }
+                val movieDetailViewModel: MovieDetailViewModel = hiltViewModel()
+                val movieDetailState = movieDetailViewModel.state.collectAsState().value
+                val movie by movieDetailViewModel.movie.collectAsState()
+                val isFavorite by movieDetailViewModel.isFavorite.collectAsState()
                 MovieDetailsScreen(
                     movie = decodedMovie!!,
-                    navController = navController
+                    navController = navController,
+                    movieDetailState = movieDetailState,
+                    onFavoriteMovie = { movie ->
+                        movieDetailViewModel.toggleFavorite()
+                    },
+                    isFavorite = isFavorite
                 )
             }
         }

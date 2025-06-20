@@ -1,5 +1,6 @@
 package com.iagoaf.movieexplorer.src.shared.movie.domain
 
+import com.iagoaf.movieexplorer.src.shared.movie.domain.repository.IMoviesRepository
 import com.iagoaf.movieexplorer.src.shared.movie.infra.repository.MoviesRepositoryImp
 import dagger.Binds
 import dagger.Module
