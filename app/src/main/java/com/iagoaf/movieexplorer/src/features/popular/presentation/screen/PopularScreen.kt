@@ -56,14 +56,14 @@ fun PopularScreen(
         )
 
         Text(
-            "Populares",
+            "Popular",
             style = appTypography.displayLarge.copy(
                 color = White
             ),
             modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
         )
         Text(
-            "Explore os filmes populares hoje e encontre coisas novas para assistir!",
+            "Explore popular movies today and find new things to watch!",
             style = appTypography.labelMedium.copy(
                 color = Gray700
             ),

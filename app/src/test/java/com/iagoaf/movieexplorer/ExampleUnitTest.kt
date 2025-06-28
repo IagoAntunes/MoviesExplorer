@@ -1,17 +1,24 @@
 package com.iagoaf.movieexplorer
 
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
-import org.junit.Assert.*
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
-class ExampleUnitTest {
+class CounterViewModel {
+    var count = 0
+        private set
+
+    fun increment() {
+        count++
+    }
+
+}
+
+class CounterViewModelTest {
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun increment_aumentaContador() {
+        val vm = CounterViewModel()
+        vm.increment()
+        assertEquals(1, vm.count)
     }
 }

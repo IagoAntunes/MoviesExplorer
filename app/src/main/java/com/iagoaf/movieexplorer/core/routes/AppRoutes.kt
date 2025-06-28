@@ -12,7 +12,7 @@ object AppRoutes {
 }
 
 sealed class ScreenNavItem(val route: String, val label: String, val iconResId: Int) {
-    object Popular : ScreenNavItem(AppRoutes.POPULAR, "Populares", R.drawable.ic_film)
-    object Search : ScreenNavItem(AppRoutes.SEARCH, "Buscar", R.drawable.ic_search)
-    object Favorites : ScreenNavItem(AppRoutes.FAVORITES, "Favoritos", R.drawable.ic_favorites)
+    object Popular : ScreenNavItem(AppRoutes.POPULAR, "Popular", R.drawable.ic_film)
+    object Search : ScreenNavItem(AppRoutes.SEARCH, "Search", R.drawable.ic_search)
+    object Favorites : ScreenNavItem(AppRoutes.FAVORITES, "Favorites", R.drawable.ic_favorites)
 }

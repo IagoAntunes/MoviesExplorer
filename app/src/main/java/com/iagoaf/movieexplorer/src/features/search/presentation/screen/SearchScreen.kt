@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.iagoaf.movieexplorer.R
-import com.iagoaf.movieexplorer.core.routes.AppRoutes
 import com.iagoaf.movieexplorer.core.ui.theme.Gray100
 import com.iagoaf.movieexplorer.core.ui.theme.Gray500
 import com.iagoaf.movieexplorer.core.ui.theme.Gray700
@@ -47,7 +46,6 @@ import com.iagoaf.movieexplorer.core.ui.theme.PurpleLight
 import com.iagoaf.movieexplorer.core.ui.theme.White
 import com.iagoaf.movieexplorer.core.ui.theme.appTypography
 import com.iagoaf.movieexplorer.src.features.search.presentation.state.SearchState
-import com.iagoaf.movieexplorer.src.shared.movie.domain.model.MovieModel
 import com.iagoaf.movieexplorer.src.shared.components.ListMoviesComp
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -76,14 +74,14 @@ fun SearchScreen(
         )
 
         Text(
-            "Buscar",
+            "Search",
             style = appTypography.displayLarge.copy(
                 color = White
             ),
             modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
         )
         Text(
-            "Encontre filmes buscando pelo título",
+            "Find movies by searching by title",
             style = appTypography.labelMedium.copy(
                 color = Gray700
             ),
@@ -121,7 +119,7 @@ fun SearchScreen(
                 },
                 placeholder = {
                     Text(
-                        "Pesquisar filme",
+                        "Search movie",
                         style = appTypography.labelMedium.copy(color = Gray500)
                     )
                 },
@@ -181,9 +179,11 @@ fun SearchScreen(
                         onSearchMovie(searchQuery, false)
                     },
                     onClickMovie = { movie ->
-                        val movieJson = URLEncoder.encode(Json.encodeToString(movie), StandardCharsets.UTF_8.toString())
+                        val movieJson = URLEncoder.encode(
+                            Json.encodeToString(movie),
+                            StandardCharsets.UTF_8.toString()
+                        )
                         navController.navigate("movieDetail/$movieJson")
-
                     }
                 )
             }
@@ -200,7 +200,7 @@ fun SearchScreen(
                         modifier = Modifier.size(44.dp)
                     )
                     Text(
-                        text = "Nenhuma pesquisa realizada",
+                        text = "No research carried out",
                         style = appTypography.titleMedium.copy(
                             color = Gray500,
                         )

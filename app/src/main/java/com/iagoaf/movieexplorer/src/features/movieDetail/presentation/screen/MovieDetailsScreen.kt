@@ -140,13 +140,13 @@ fun MovieDetailsScreen(
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_arrow_left),
-                            contentDescription = "Botão",
+                            contentDescription = "Icon Back",
                             tint = Gray600,
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            "Voltar",
+                            "Back",
                             style = appTypography.bodyMedium.copy(
                                 color = Gray600
                             )
@@ -242,8 +242,8 @@ private fun MovieDetailsPreview() {
             originalTitle = "Original Movie Title",
             overview = "This is a brief overview of the movie. It provides a summary of the plot and main themes.",
             releaseDate = "2023-10-01",
-            backdropPath = "/path/to/backdrop.jpg",
-            posterPath = "/path/to/poster.jpg",
+            backdropPath = "",
+            posterPath = "",
             genreIds = listOf(1, 2, 3),
             originalLanguage = "en",
             adult = false,

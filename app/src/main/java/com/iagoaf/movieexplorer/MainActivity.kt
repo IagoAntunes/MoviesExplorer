@@ -56,7 +56,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.serialization.json.Json
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
-
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -66,7 +65,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             MovieExplorerTheme {
-                ContentApp(navController = navController)
+                NavGraphHost(navController = navController)
             }
         }
     }
@@ -74,23 +73,86 @@ class MainActivity : ComponentActivity() {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ContentApp(navController: NavHostController) {
+fun NavGraphHost(navController: NavHostController) {
+    NavHost(
+        navController = navController,
+        startDestination = AppRoutes.POPULAR,
+    ) {
+        composable(AppRoutes.POPULAR) {
+            val vm: PopularViewModel = hiltViewModel()
+            val state = vm.state.collectAsState().value
+            ScreenWithBottomBar(navController) {
+                PopularScreen(navController = navController, state = state)
+            }
+        }
+        composable(AppRoutes.SEARCH) {
+            val vm: SearchViewModel = hiltViewModel()
+            val state = vm.state.collectAsState().value
+            ScreenWithBottomBar(navController) {
+                SearchScreen(
+                    navController = navController,
+                    searchState = state,
+                    onSearchMovie = { query, reset ->
+                        vm.searchMovie(query, reset)
+                    }
+                )
+            }
+        }
+        composable(AppRoutes.FAVORITES) {
+            val vm: FavoritesViewModel = hiltViewModel()
+            val state = vm.state.collectAsState().value
+            LaunchedEffect(Unit) {
+                vm.getFavorites()
+            }
+            ScreenWithBottomBar(navController) {
+                FavoritesScreen(navController = navController, state = state)
+            }
+        }
+        composable(
+            route = "${AppRoutes.MOVIE_DETAIL}/{movie}",
+            arguments = listOf(navArgument("movie") {
+                type = NavType.StringType
+            })
+        ) { backStackEntry ->
+            val movieArg = backStackEntry.arguments?.getString("movie")
+            val decodedMovie = movieArg?.let {
+                val json = URLDecoder.decode(it, StandardCharsets.UTF_8.toString())
+                Json.decodeFromString<MovieModel>(json)
+            }
+            val vm: MovieDetailViewModel = hiltViewModel()
+            val state = vm.state.collectAsState().value
+            val isFavorite by vm.isFavorite.collectAsState()
+
+            MovieDetailsScreen(
+                movie = decodedMovie!!,
+                navController = navController,
+                movieDetailState = state,
+                onFavoriteMovie = { vm.toggleFavorite() },
+                isFavorite = isFavorite
+            )
+        }
+    }
+}
+
+@Composable
+fun ScreenWithBottomBar(
+    navController: NavHostController,
+    content: @Composable (Modifier) -> Unit
+) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+
+    val bottomNavItems = listOf(
+        ScreenNavItem.Popular,
+        ScreenNavItem.Search,
+        ScreenNavItem.Favorites
+    )
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = Gray100,
         bottomBar = {
-            BottomAppBar(
-                containerColor = Gray200
-            ) {
-                val bottomNavItems = listOf(
-                    ScreenNavItem.Popular,
-                    ScreenNavItem.Search,
-                    ScreenNavItem.Favorites
-                )
-
+            BottomAppBar(containerColor = Gray200) {
                 bottomNavItems.forEach { screen ->
                     val isSelected =
                         currentDestination?.hierarchy?.any { it.route == screen.route } == true
@@ -117,7 +179,7 @@ fun ContentApp(navController: NavHostController) {
                                 painter = painterResource(id = screen.iconResId),
                                 contentDescription = screen.label,
                                 tint = if (isSelected) PurpleLight else Gray500,
-                                modifier = Modifier.size(24.dp),
+                                modifier = Modifier.size(24.dp)
                             )
                         },
                         label = {
@@ -132,71 +194,12 @@ fun ContentApp(navController: NavHostController) {
                     )
                 }
             }
-        }) { innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = AppRoutes.POPULAR,
-            modifier = Modifier.padding(innerPadding)
-        ) {
-            composable(route = AppRoutes.POPULAR) {
-                val popularViewModel: PopularViewModel = hiltViewModel()
-                val popularState = popularViewModel.state.collectAsState().value
-                PopularScreen(
-                    navController = navController,
-                    state = popularState,
-                )
-            }
-            composable(route = AppRoutes.SEARCH) {
-                val searchViewModel: SearchViewModel = hiltViewModel()
-                val searchState = searchViewModel.state.collectAsState().value
-                SearchScreen(
-                    navController = navController,
-                    searchState = searchState,
-                    onSearchMovie = { movieName, reset ->
-                        searchViewModel.searchMovie(movieName, reset)
-                    }
-                )
-            }
-            composable(route = AppRoutes.FAVORITES) {
-                val favoritesViewModel: FavoritesViewModel = hiltViewModel()
-                val favoritesState = favoritesViewModel.state.collectAsState().value
-
-                LaunchedEffect(Unit) {
-                    favoritesViewModel.getFavorites()
-                }
-
-                FavoritesScreen(navController = navController, state = favoritesState)
-            }
-            composable(
-                route = "${AppRoutes.MOVIE_DETAIL}/{movie}",
-                arguments = listOf(
-                    navArgument("movie") {
-                        type = NavType.StringType
-                    }
-                ),
-            ) { backStackEntry ->
-                val encodedMovie = backStackEntry.arguments?.getString("movie")
-                val decodedMovie = encodedMovie?.let {
-                    val json = URLDecoder.decode(it, StandardCharsets.UTF_8.toString())
-                    Json.decodeFromString<MovieModel>(json)
-                }
-                val movieDetailViewModel: MovieDetailViewModel = hiltViewModel()
-                val movieDetailState = movieDetailViewModel.state.collectAsState().value
-                val movie by movieDetailViewModel.movie.collectAsState()
-                val isFavorite by movieDetailViewModel.isFavorite.collectAsState()
-                MovieDetailsScreen(
-                    movie = decodedMovie!!,
-                    navController = navController,
-                    movieDetailState = movieDetailState,
-                    onFavoriteMovie = { movie ->
-                        movieDetailViewModel.toggleFavorite()
-                    },
-                    isFavorite = isFavorite
-                )
-            }
         }
+    ) { innerPadding ->
+        content(Modifier.padding(innerPadding))
     }
 }
+
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -204,6 +207,6 @@ fun ContentApp(navController: NavHostController) {
 @Composable
 fun ContentAppPreview() {
     MovieExplorerTheme {
-        ContentApp(navController = rememberNavController())
+
     }
 }
