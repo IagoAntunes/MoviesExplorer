@@ -8,6 +8,8 @@
   <a href="#english">🇺🇸 English</a> | <a href="#português">🇧🇷 Português</a>
 </p>
 
+<img width="1080" height="758" alt="Cover" src="https://github.com/user-attachments/assets/94a078e4-99de-4b01-9518-c27bde0ef1be"/>
+
 ---
 
 ## 🇺🇸 English
